@@ -32,7 +32,7 @@ text_encoder = pipe.text_encoder
 vae = pipe.vae #vraition auto encorder
 unet = pipe.unet
 
-prompt = args.prompt
+prompt = [args.prompt]
 height = 512  # default height of Stable Diffusion
 width = 512  # default width of Stable Diffusion
 num_inference_steps = 25  # Number of denoising steps
