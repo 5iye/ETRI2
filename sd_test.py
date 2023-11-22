@@ -3,6 +3,13 @@ from diffusers import DDIMScheduler
 import torch 
 from PIL import Image 
 from tqdm.auto import tqdm
+import argparse
+
+parser = argparse.ArgumentParser(description='stable diffusion model')
+
+parser.add_argument('--prompt', type=str)
+
+args = parser.parse_args()
 
 
 ddim_scheduler = DDIMScheduler(beta_start=0.00085,
@@ -25,7 +32,7 @@ text_encoder = pipe.text_encoder
 vae = pipe.vae #vraition auto encorder
 unet = pipe.unet
 
-prompt = ["a phto of a tiger"]
+prompt = args.prompt
 height = 512  # default height of Stable Diffusion
 width = 512  # default width of Stable Diffusion
 num_inference_steps = 25  # Number of denoising steps
@@ -46,14 +53,14 @@ with torch.no_grad():
                              return_tensors="pt")
     uncond_embeddings = text_encoder(uncond_input.input_ids.to("cuda"))[0]
 
-# text embedings.shape = 2, 77, 768]
+# text embedings.shape = [2, 77, 768]
 text_embeddings = torch.cat([uncond_embeddings,
                              text_embeddings])
 
 latents = torch.randn(
     (batch_size,
      unet.config.in_channels,
-     height // 8, width // 8), # image (512,512) =>vae ==> Latent vector (64, 64)
+     height // 8, width // 8), # image (512,512) => vae ==> Latent vector (64, 64)
      generator=generator,
 )
 latents = latents.to("cuda")
@@ -83,15 +90,15 @@ for t in tqdm(scheduler.timesteps):
                              t, 
                              latents).prev_sample
     
-latents = 1 / 0.18215 * latents  #0.18215 is nomalization sacaling factor (no meanning)
-with torch.no_grad():
-    image = vae.decode(latents).sample
+    latents = 1 / 0.18215 * latents  #0.18215 is nomalization sacaling factor (no meanning)
+    with torch.no_grad():
+        image = vae.decode(latents).sample
 
-image = (image / 2 + 0.5).clamp(0, 1).squeeze() # squeeze function : numpy => PIL conversion 
-image = (image.permute(1, 2, 0) * 255).to(torch.uint8).cpu().numpy()
-images = (image * 255).round().astype("uint8")
-image = Image.fromarray(image)
-image.save('test_image.jpg')
+    image = (image / 2 + 0.5).clamp(0, 1).squeeze() # squeeze function : numpy => PIL conversion 
+    image = (image.permute(1, 2, 0) * 255).to(torch.uint8).cpu().numpy()
+    images = (image * 255).round().astype("uint8")
+    image = Image.fromarray(image)
+    image.save('./result/test_image_{}.jpg'.format(t))
 # for t in tqdm(scheduler.timesteps):
 #     # expand the latents if we are doing classifier-free guidance to avoid doing two forward passes.
 #     latent_model_input = torch.cat([latents] * 2)
