@@ -69,5 +69,5 @@ with gr.Blocks() as demo:
 
 
 if __name__ == "__main__":
-    demo.launch(server_name="129.254.23.116", show_api=False)   
+    demo.launch(show_api=False)   
 
