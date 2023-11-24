@@ -14,7 +14,8 @@ init_image = load_image("https://huggingface.co/datasets/huggingface/documentati
 mask_image = load_image("https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/diffusers/inpaint_mask.png")
 
 generator = torch.Generator("cuda").manual_seed(92)
-prompt = "concept art digital painting of an elven castle, inspired by lord of the rings, highly detailed, 8k"
+# prompt = "concept art digital painting of an elven castle, inspired by lord of the rings, highly detailed, 8k"
+prompt = ""
 image = pipeline(prompt=prompt, image=init_image, mask_image=mask_image, generator=generator).images[0]
 image= make_image_grid([init_image, mask_image, image], rows=1, cols=3)
 image.save('./result/test_image.jpg')
