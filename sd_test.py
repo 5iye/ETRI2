@@ -79,7 +79,7 @@ for t in tqdm(scheduler.timesteps):
     with torch.no_grad():
         noise_pred = unet(latent_model_input, 
                           t, 
-                          encoder_hidden_states=text_embeddings).sample
+                          encoder_hidden_states=text_embeddings)
 
     # perform guidance
     noise_pred_uncond, noise_pred_text = noise_pred.chunk(2)
@@ -96,7 +96,7 @@ for t in tqdm(scheduler.timesteps):
 
     image = (image / 2 + 0.5).clamp(0, 1).squeeze() # squeeze function : numpy => PIL conversion 
     image = (image.permute(1, 2, 0) * 255).to(torch.uint8).cpu().numpy()
-    images = (image * 255).round().astype("uint8")
+    # images = (image * 255).round().astype("uint8")
     image = Image.fromarray(image)
     image.save('./result/test_image_{}.jpg'.format(t))
 # for t in tqdm(scheduler.timesteps):
