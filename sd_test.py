@@ -90,15 +90,15 @@ for t in tqdm(scheduler.timesteps):
                              t, 
                              latents).prev_sample
     
-    latents = 1 / 0.18215 * latents  #0.18215 is nomalization sacaling factor (no meanning)
-    with torch.no_grad():
-        image = vae.decode(latents).sample
+latents = 1 / 0.18215 * latents  #0.18215 is nomalization sacaling factor (no meanning)
+with torch.no_grad():
+    image = vae.decode(latents).sample
 
-    image = (image / 2 + 0.5).clamp(0, 1).squeeze() # squeeze function : numpy => PIL conversion 
-    image = (image.permute(1, 2, 0) * 255).to(torch.uint8).cpu().numpy()
-    # images = (image * 255).round().astype("uint8")
-    image = Image.fromarray(image)
-    image.save('./result/test_image_{}.jpg'.format(t))
+image = (image / 2 + 0.5).clamp(0, 1).squeeze() # squeeze function : numpy => PIL conversion 
+image = (image.permute(1, 2, 0) * 255).to(torch.uint8).cpu().numpy()
+images = (image * 255).round().astype("uint8")
+image = Image.fromarray(image)
+image.save('./result/test_image_{}.jpg'.format(t))
 # for t in tqdm(scheduler.timesteps):
 #     # expand the latents if we are doing classifier-free guidance to avoid doing two forward passes.
 #     latent_model_input = torch.cat([latents] * 2)
